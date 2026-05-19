@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BTC Signal Engine</title>
+  <style>
+    :root {
+      --bg: #080808;
+      --surface: #111111;
+      --surface2: #181818;
+      --border: #242424;
+      --text: #e2e2e2;
+      --muted: #555555;
+      --green: #00c97a;
+      --yellow: #e8a020;
+      --red: #e84040;
+      --blue: #4a9eff;
+
+      --regime-CAPITULATION_ZONE: #00c97a;
+      --regime-TACTICAL_BUY_AGGRESSIVE: #00c97a;
+      --regime-TACTICAL_BUY_MODERATE: #44bb77;
+      --regime-TACTICAL_BUY_LIGHT: #88aa55;
+      --regime-NEUTRAL: #888888;
+      --regime-RISK_OFF: #e8a020;
+      --regime-EXTREME_RISK: #e84040;
+      --regime-OVERLEVERAGED_MARKET: #e84040;
+      --regime-EUPHORIA_ZONE: #e84040;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 24px 16px;
+    }
+
+    .container { max-width: 900px; margin: 0 auto; }
+
+    /* ── Header ─────────────────────────────────── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .logo { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
+    .logo span { color: var(--yellow); }
+
+    .header-right { display: flex; align-items: center; gap: 12px; }
+
+    .timestamp { color: var(--muted); font-size: 12px; }
+
+    button#refresh {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 6px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+      transition: border-color 0.2s;
+    }
+    button#refresh:hover { border-color: var(--yellow); }
+    button#refresh:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ── Cards ──────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    /* ── Hero grid ──────────────────────────────── */
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 600px) { .hero-grid { grid-template-columns: 1fr; } }
+
+    .hero-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+    }
+
+    .hero-label {
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .hero-value {
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .hero-sub {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* ── Regime color ───────────────────────────── */
+    .regime-CAPITULATION_ZONE    { color: var(--green); }
+    .regime-TACTICAL_BUY_AGGRESSIVE { color: var(--green); }
+    .regime-TACTICAL_BUY_MODERATE   { color: #44bb77; }
+    .regime-TACTICAL_BUY_LIGHT      { color: #88aa55; }
+    .regime-NEUTRAL                 { color: var(--muted); }
+    .regime-RISK_OFF                { color: var(--yellow); }
+    .regime-EXTREME_RISK            { color: var(--red); }
+    .regime-OVERLEVERAGED_MARKET    { color: var(--red); }
+    .regime-EUPHORIA_ZONE           { color: var(--red); }
+
+    .score-pos { color: var(--green); }
+    .score-neg { color: var(--red); }
+    .score-zero { color: var(--muted); }
+
+    /* ── Indicators table ───────────────────────── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      text-align: left;
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 0 0 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    tbody tr { border-bottom: 1px solid #1a1a1a; }
+    tbody tr:last-child { border-bottom: none; }
+
+    tbody td {
+      padding: 9px 0;
+      vertical-align: top;
+    }
+
+    .ind-name { color: var(--text); }
+    .ind-score { text-align: center; font-weight: 700; width: 50px; }
+    .ind-summary { color: var(--muted); font-size: 11px; padding-left: 16px; }
+
+    /* ── Triggered rules ────────────────────────── */
+    .rules-list { list-style: none; }
+
+    .rule-item {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+    }
+
+    .rule-name {
+      font-weight: 700;
+      font-size: 12px;
+      color: var(--yellow);
+      margin-bottom: 6px;
+    }
+
+    .rule-reasons { color: var(--muted); font-size: 11px; }
+    .rule-reasons li { margin-bottom: 2px; padding-left: 12px; }
+    .rule-reasons li::before { content: "▸ "; }
+
+    .no-rules { color: var(--muted); font-size: 12px; }
+
+    /* ── Playbook ───────────────────────────────── */
+    .playbook-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 500px) { .playbook-grid { grid-template-columns: 1fr; } }
+
+    .playbook-col-title {
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .playbook-col-title.allowed { color: var(--green); }
+    .playbook-col-title.avoid { color: var(--red); }
+
+    .playbook-items { list-style: none; }
+
+    .playbook-items li {
+      font-size: 12px;
+      color: var(--muted);
+      padding: 4px 0;
+      border-bottom: 1px solid #1a1a1a;
+    }
+
+    .playbook-items li:last-child { border-bottom: none; }
+    .playbook-items.allowed li::before { content: "✓  "; color: var(--green); }
+    .playbook-items.avoid li::before { content: "✗  "; color: var(--red); }
+
+    /* ── Summary ────────────────────────────────── */
+    .summary-text {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.8;
+      white-space: pre-wrap;
+    }
+
+    /* ── State overlays ─────────────────────────── */
+    #loading, #error-msg {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    #error-msg { color: var(--red); display: none; }
+
+    #dashboard { display: none; }
+
+    .spinner {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid var(--border);
+      border-top-color: var(--yellow);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .risk-LOW    { color: var(--green); }
+    .risk-MEDIUM { color: #88aa55; }
+    .risk-HIGH   { color: var(--yellow); }
+    .risk-EXTREME { color: var(--red); }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo"><span>₿</span> BTC Signal Engine</div>
+    <div class="header-right">
+      <span class="timestamp" id="ts">—</span>
+      <button id="refresh">Atualizar</button>
+    </div>
+  </header>
+
+  <div id="loading"><span class="spinner"></span>Carregando dados...</div>
+  <div id="error-msg"></div>
+
+  <div id="dashboard">
+    <div class="hero-grid">
+      <div class="hero-card">
+        <div class="hero-label">Regime</div>
+        <div class="hero-value" id="h-regime">—</div>
+        <div class="hero-sub" id="h-bias">—</div>
+      </div>
+      <div class="hero-card">
+        <div class="hero-label">Score Ponderado</div>
+        <div class="hero-value" id="h-score">—</div>
+        <div class="hero-sub" id="h-risk">—</div>
+      </div>
+      <div class="hero-card">
+        <div class="hero-label">Preço BTC</div>
+        <div class="hero-value" id="h-price">—</div>
+        <div class="hero-sub" id="h-raw">—</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Indicadores</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Indicador</th>
+            <th style="text-align:center">Pts</th>
+            <th style="padding-left:16px">Estado</th>
+          </tr>
+        </thead>
+        <tbody id="indicators-body"></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Regras Disparadas</div>
+      <ul class="rules-list" id="rules-list"></ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Playbook Tático</div>
+      <div class="playbook-grid">
+        <div>
+          <div class="playbook-col-title allowed">Permitido</div>
+          <ul class="playbook-items allowed" id="playbook-allowed"></ul>
+        </div>
+        <div>
+          <div class="playbook-col-title avoid">Evitar</div>
+          <ul class="playbook-items avoid" id="playbook-avoid"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Leitura Final</div>
+      <div class="summary-text" id="summary-text"></div>
+    </div>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

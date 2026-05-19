@@ -1,0 +1,13 @@
+{
+  "name": "btc-monitor-web",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "btc-monitor": "github:diegovalemoreno/btc-monitor"
+  },
+  "devDependencies": {
+    "@vercel/node": "^5.0.0",
+    "@types/node": "^20.12.7",
+    "typescript": "^5.4.5"
+  }
+}
