@@ -54,6 +54,32 @@ export interface IndicatorScore {
   summary: string;
 }
 
+// ─── Grupo de Indicadores ─────────────────────────────────────
+
+export type IndicatorGroupKey =
+  | "sentiment"
+  | "derivatives"
+  | "onchain"
+  | "trend"
+  | "macro"
+  | "synthesis";
+
+export interface IndicatorGroup {
+  key: IndicatorGroupKey;
+  label: string;
+  score: number;
+  indicators: IndicatorScore[];
+}
+
+// ─── Scores Dimensionais ──────────────────────────────────────
+
+export interface DimensionScores {
+  sentiment: number;
+  derivatives: number;
+  onchain: number;
+  trend: number;
+}
+
 // ─── Sinal Tático Final ──────────────────────────────────────
 
 export interface TacticalSignal {
@@ -70,5 +96,9 @@ export interface TacticalSignal {
   indicators: IndicatorScore[];
   triggeredRules: TriggeredRule[];
   playbook: TacticalPlaybook;
-  summary: string;              // prosa curta para leitura final
+  summary: string;              // texto completo formatado (compat. telegram)
+  insights: string[];           // bullets de observação estruturados
+  reading: string;              // leitura narrativa isolada
+  dimensionScores: DimensionScores;
+  indicatorGroups: IndicatorGroup[];
 }

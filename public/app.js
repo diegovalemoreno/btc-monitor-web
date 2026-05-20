@@ -44,6 +44,29 @@ const TOOLTIPS = {
   "Stablecoin Ratio": "Compara o tamanho do mercado de stablecoins (USDT, USDC, DAI) com o market cap do Bitcoin.\n\nSSR baixo (< 4) = muito dinheiro parado em stablecoins esperando para entrar no mercado = força compradora disponível = bullish.\nSSR alto (> 10) = pouco dinheiro relativo em stablecoins = pouco combustível para subida.",
 };
 
+// ── Labels legíveis ───────────────────────────────────────────
+const REGIME_LABELS = {
+  "CAPITULATION_ZONE":       "Zona de Capitulação",
+  "TACTICAL_BUY_AGGRESSIVE": "Compra Agressiva",
+  "TACTICAL_BUY_MODERATE":   "Compra Moderada",
+  "TACTICAL_BUY_LIGHT":      "Compra Leve",
+  "NEUTRAL":                 "Neutro",
+  "RISK_OFF":                "Risco Elevado",
+  "EXTREME_RISK":            "Risco Extremo",
+  "OVERLEVERAGED_MARKET":    "Mercado Alavancado",
+  "EUPHORIA_ZONE":           "Zona de Euforia",
+};
+
+const BIAS_LABELS = {
+  "DCA_NORMAL":              "DCA Normal",
+  "TACTICAL_BUY_LIGHT":      "Acumulação Leve",
+  "TACTICAL_BUY_MODERATE":   "Acumulação Moderada",
+  "TACTICAL_BUY_AGGRESSIVE": "Compra Agressiva",
+  "WAIT":                    "Aguardar",
+  "RISK_OFF":                "Reduzir Risco",
+};
+
+// ── Utilitários ───────────────────────────────────────────────
 function formatUSD(n) {
   if (n == null) return "indisponível";
   return "$" + n.toLocaleString("en-US", { maximumFractionDigits: 0 });
@@ -73,71 +96,147 @@ function escapeHtml(str) {
   return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
 
-function renderIndicators(indicators) {
-  const grid = $("indicators-body");
-  grid.innerHTML = indicators.map((ind) => {
-    const tip = TOOLTIPS[ind.name] || "";
-    const tipAttr = tip ? `data-tooltip="${escapeHtml(tip)}"` : "";
-    const sc = scoreClass(ind.score);
-    const sigClass = ind.score > 0 ? "sig-pos" : ind.score < 0 ? "sig-neg" : "sig-zero";
-    return `<div class="ind-card ${sigClass}${tip ? " has-tooltip" : ""}" ${tipAttr}>
-      <div class="ind-card-header">
-        <span class="ind-card-name">${ind.name}</span>
-        <span class="${sc}"><span class="score-badge">${scoreLabel(ind.score)}</span></span>
+function formatRegime(r) {
+  return REGIME_LABELS[r] || r.replace(/_/g, " ");
+}
+
+function formatBias(b) {
+  return BIAS_LABELS[b] || b.replace(/_/g, " ");
+}
+
+// ── Contexto Operacional ──────────────────────────────────────
+function renderContext(signal) {
+  const card = $("context-card");
+  card.style.setProperty("--ctx-color", `var(--regime-${signal.regime})`);
+
+  const regimeEl = $("ctx-regime");
+  regimeEl.textContent = formatRegime(signal.regime);
+  regimeEl.className = `ctx-regime-value regime-${signal.regime}`;
+
+  $("ctx-bias").innerHTML = `Viés: <strong>${formatBias(signal.actionBias)}</strong>`;
+
+  const w = signal.score.weighted;
+  $("ctx-risk").innerHTML = `Risco: <span class="risk-${signal.riskLevel}">${signal.riskLevel}</span>`;
+  $("ctx-score").innerHTML = `Score: <span class="${scoreClass(w)}">${scoreLabel(w)}</span>`;
+  $("ctx-price").textContent = formatUSD(signal.btcPrice);
+  $("ts").textContent = formatTime(signal.generatedAt);
+
+  const insights = signal.insights || [];
+  const insightsEl = $("ctx-insights");
+  if (insights.length > 0) {
+    insightsEl.innerHTML = insights.map((i) => `<li>${escapeHtml(i)}</li>`).join("");
+    insightsEl.style.display = "";
+  } else {
+    insightsEl.style.display = "none";
+  }
+
+  const reading = signal.reading || extractReading(signal.summary) || "";
+  $("ctx-reading").textContent = reading;
+  $("ctx-reading").style.display = reading ? "" : "none";
+}
+
+function extractReading(summary) {
+  if (!summary) return "";
+  const m = summary.match(/Leitura:\n([\s\S]+)/);
+  return m ? m[1].trim() : summary;
+}
+
+// ── Scores Dimensionais ───────────────────────────────────────
+const DIM_DEFS = [
+  { key: "sentiment",   label: "Sentimento",  cap: 6 },
+  { key: "derivatives", label: "Derivativos", cap: 8 },
+  { key: "onchain",     label: "On-chain",    cap: 10 },
+  { key: "trend",       label: "Tendência",   cap: 10 },
+];
+
+function renderDimScores(dimScores) {
+  if (!dimScores) return;
+  const container = $("dim-scores");
+
+  container.innerHTML = DIM_DEFS.map(({ key, label, cap }) => {
+    const score = dimScores[key] ?? 0;
+    const pct   = Math.min(50, (Math.abs(score) / cap) * 50);
+
+    let color, status;
+    if (score > 1)       { color = "var(--buy-strong)";  status = "favorável"; }
+    else if (score < -1) { color = "var(--sell-strong)"; status = "alerta";    }
+    else                 { color = "var(--neutral)";      status = "neutro";    }
+
+    const fillStyle = score >= 0
+      ? `left:50%;width:${pct}%;background:${color}`
+      : `left:${50 - pct}%;width:${pct}%;background:${color}`;
+
+    const sl = score > 0 ? `+${score}` : String(score);
+
+    return `<div class="dim-item">
+      <div class="dim-label">${label}</div>
+      <div class="dim-bar-track">
+        <div class="dim-bar-fill" style="${fillStyle}"></div>
       </div>
-      <div class="ind-card-summary">${ind.summary}</div>
+      <div class="dim-footer">
+        <span class="dim-status" style="color:${color}">${status}</span>
+        <span class="dim-score">${sl}</span>
+      </div>
     </div>`;
   }).join("");
 }
 
-function renderRules(rules) {
-  const list = $("rules-list");
-  if (!rules || rules.length === 0) {
-    list.innerHTML = `<li class="no-rules">Nenhuma regra composta ativa no momento.</li>`;
+// ── Indicadores Agrupados ─────────────────────────────────────
+function renderIndCard(ind) {
+  const tip     = TOOLTIPS[ind.name] || "";
+  const tipAttr = tip ? `data-tooltip="${escapeHtml(tip)}"` : "";
+  const sc       = scoreClass(ind.score);
+  const sigClass = ind.score > 0 ? "sig-pos" : ind.score < 0 ? "sig-neg" : "sig-zero";
+  return `<div class="ind-card ${sigClass}${tip ? " has-tooltip" : ""}" ${tipAttr}>
+    <div class="ind-card-header">
+      <span class="ind-card-name">${ind.name}</span>
+      <span class="${sc}"><span class="score-badge">${scoreLabel(ind.score)}</span></span>
+    </div>
+    <div class="ind-card-summary">${ind.summary}</div>
+  </div>`;
+}
+
+function renderGroupedIndicators(groups) {
+  const container = $("indicators-grouped");
+  if (!groups || groups.length === 0) {
+    container.innerHTML = "";
     return;
   }
-  list.innerHTML = rules.map((r) => `
-    <li class="rule-item">
-      <div class="rule-name">${r.name}</div>
-      <ul class="rule-reasons">${r.reasons.map((x) => `<li>${x}</li>`).join("")}</ul>
-    </li>
-  `).join("");
+
+  container.innerHTML = groups.map((group) => {
+    const sc = scoreClass(group.score);
+    const sl = group.score > 0 ? `+${group.score}` : String(group.score);
+    const cards = group.indicators.map(renderIndCard).join("");
+    return `<div class="group-section">
+      <div class="group-header">
+        <span class="group-label">${group.label}</span>
+        <span class="${sc}"><span class="score-badge">${sl}</span></span>
+      </div>
+      <div class="ind-grid">${cards}</div>
+    </div>`;
+  }).join("");
 }
 
+// ── Playbook ──────────────────────────────────────────────────
 function renderPlaybook(playbook) {
   $("playbook-allowed").innerHTML = playbook.allowed.map((x) => `<li>${x}</li>`).join("");
-  $("playbook-avoid").innerHTML = playbook.avoid.map((x) => `<li>${x}</li>`).join("");
+  $("playbook-avoid").innerHTML   = playbook.avoid.map((x) => `<li>${x}</li>`).join("");
 }
 
+// ── Render principal ──────────────────────────────────────────
 function render(signal) {
-  $("h-regime").textContent = signal.regime.replace(/_/g, " ");
-  $("h-regime").className = `hero-value regime-${signal.regime}`;
-  $("h-bias").textContent = `Viés: ${signal.actionBias.replace(/_/g, " ")}`;
-  const regimeCard = document.getElementById("hero-regime");
-  if (regimeCard) regimeCard.style.borderLeftColor = `var(--regime-${signal.regime})`;
-  $("h-score").textContent = scoreLabel(signal.score.weighted);
-  $("h-score").className = `hero-value ${scoreClass(signal.score.weighted)}`;
-  const scoreCard = document.getElementById("hero-score");
-  if (scoreCard) {
-    const w = signal.score.weighted;
-    scoreCard.style.borderLeftColor = w > 0 ? "var(--green)" : w < 0 ? "var(--red)" : "var(--border)";
-  }
-  $("h-risk").innerHTML = `Risco: <span class="risk-${signal.riskLevel}">${signal.riskLevel}</span>`;
-  $("h-raw").textContent = `Score bruto: ${scoreLabel(signal.score.raw)}`;
-  $("h-price").textContent = formatUSD(signal.btcPrice);
-  $("ts").textContent = formatTime(signal.generatedAt);
-  renderIndicators(signal.indicators);
-  renderRules(signal.triggeredRules);
+  renderContext(signal);
+  renderDimScores(signal.dimensionScores);
+  renderGroupedIndicators(signal.indicatorGroups);
   renderPlaybook(signal.playbook);
-  $("summary-text").textContent = signal.summary || "—";
   _lastSignal = signal;
   updateShareLinks(signal);
 }
 
 function setState(state, errorMsg) {
-  $("loading").style.display = state === "loading" ? "block" : "none";
-  $("error-msg").style.display = state === "error" ? "block" : "none";
-  $("dashboard").style.display = state === "ready" ? "block" : "none";
+  $("loading").style.display   = state === "loading" ? "block" : "none";
+  $("error-msg").style.display = state === "error"   ? "block" : "none";
+  $("dashboard").style.display = state === "ready"   ? "block" : "none";
   if (state === "error") $("error-msg").textContent = errorMsg || "Erro desconhecido.";
 }
 
@@ -161,8 +260,8 @@ function showTooltip(target, text) {
 function positionTooltip(target) {
   if (!tooltipEl) return;
   const rect = target.getBoundingClientRect();
-  const tipW = tooltipEl.offsetWidth;
-  const tipH = tooltipEl.offsetHeight;
+  const tipW  = tooltipEl.offsetWidth;
+  const tipH  = tooltipEl.offsetHeight;
   let left = rect.left + window.scrollX;
   let top  = rect.bottom + window.scrollY + 8;
   if (left + tipW > window.innerWidth - 12) left = window.innerWidth - tipW - 12;
@@ -188,7 +287,6 @@ document.addEventListener("scroll", () => {
   if (hovered) positionTooltip(hovered); else hideTooltip();
 }, { passive: true });
 
-// tap-to-show for touch devices
 let _tapTarget = null;
 document.addEventListener("click", (e) => {
   const el = e.target.closest("[data-tooltip]");
@@ -212,7 +310,7 @@ let _lastSignal = null;
 const SITE_URL = "https://btc-monitor-web.vercel.app";
 
 function buildShareText(signal) {
-  const regime = signal.regime.replace(/_/g, " ");
+  const regime = formatRegime(signal.regime);
   const score  = scoreLabel(signal.score.weighted);
   const price  = formatUSD(signal.btcPrice);
   return `₿ BTC Signal Engine\nRegime: ${regime} | Score: ${score} | BTC: ${price}\n${SITE_URL}`;

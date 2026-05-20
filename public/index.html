@@ -595,6 +595,214 @@
     @media (max-width: 420px) {
       .ind-grid { grid-template-columns: 1fr; }
     }
+
+    /* ─── Context Card ──────────────────────────────── */
+    .context-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--ctx-color, var(--orange));
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 4px;
+    }
+
+    .context-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 16px;
+    }
+
+    .context-left { flex: 1; min-width: 0; }
+
+    .ctx-regime-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.3px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .ctx-regime-value {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      font-family: var(--font-mono);
+      line-height: 1.2;
+      margin-bottom: 5px;
+    }
+
+    .ctx-bias {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .ctx-bias strong {
+      color: var(--text-sec);
+      font-weight: 600;
+    }
+
+    .ctx-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 5px;
+      font-size: 12px;
+      color: var(--text-sec);
+      font-family: var(--font-mono);
+      flex-shrink: 0;
+    }
+
+    .ctx-price {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--orange);
+      letter-spacing: -0.3px;
+    }
+
+    .ctx-sep {
+      height: 1px;
+      background: var(--border-dim);
+      margin: 0 0 14px;
+    }
+
+    .ctx-insights {
+      list-style: none;
+      margin: 0 0 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .ctx-insights li {
+      font-size: 13px;
+      color: var(--text-sec);
+      padding-left: 14px;
+      position: relative;
+      line-height: 1.5;
+    }
+
+    .ctx-insights li::before {
+      content: "·";
+      position: absolute;
+      left: 3px;
+      color: var(--orange);
+      font-weight: 900;
+      font-size: 16px;
+      line-height: 1.1;
+    }
+
+    .ctx-reading {
+      font-size: 13px;
+      color: var(--text-sec);
+      border-left: 2px solid var(--border-solid);
+      padding-left: 12px;
+      line-height: 1.65;
+      font-style: italic;
+    }
+
+    /* ─── Dimension Scores ──────────────────────────── */
+    .dim-scores {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .dim-item {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 11px 13px;
+    }
+
+    .dim-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.1px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 9px;
+    }
+
+    .dim-bar-track {
+      height: 3px;
+      background: var(--surface3);
+      border-radius: 2px;
+      position: relative;
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+
+    .dim-bar-fill {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      border-radius: 2px;
+    }
+
+    .dim-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .dim-status { font-size: 11px; font-weight: 600; }
+
+    .dim-score {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    /* ─── Indicator Groups ──────────────────────────── */
+    .group-section { margin-bottom: 18px; }
+
+    .group-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      padding: 0 2px;
+    }
+
+    .group-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .group-label::after {
+      content: '';
+      display: inline-block;
+      width: 16px;
+      height: 1px;
+      background: var(--border-dim);
+      vertical-align: middle;
+    }
+
+    /* ─── Responsive — new components ───────────────── */
+    @media (max-width: 600px) {
+      .dim-scores         { grid-template-columns: repeat(2, 1fr); }
+      .context-header     { flex-direction: column; gap: 10px; }
+      .ctx-meta           { flex-direction: row; align-items: center; flex-wrap: wrap; gap: 10px; }
+      .ctx-price          { font-size: 14px; }
+    }
+
+    @media (max-width: 480px) {
+      .context-card       { padding: 14px 16px; }
+      .ctx-regime-value   { font-size: 18px; }
+    }
   </style>
 </head>
 <body>
@@ -656,58 +864,40 @@
 
   <div id="dashboard">
 
-    <div class="hero-grid">
-      <div class="hero-card" id="hero-regime">
-        <div class="hero-label">
-          Regime de Mercado
-          <span class="tip-icon has-tooltip" data-tooltip="Classificação geral do mercado derivada de todos os indicadores.
+    <div class="context-card" id="context-card">
+      <div class="context-header">
+        <div class="context-left">
+          <div class="ctx-regime-label">
+            Regime de Mercado
+            <span class="tip-icon has-tooltip" data-tooltip="Classificação geral do mercado derivada de todos os indicadores em conjunto.
 
-CAPITULATION ZONE — capitulação histórica, rara e excelente para acumular.
-TACTICAL BUY — sinal de compra com força variável (AGGRESSIVE, MODERATE, LIGHT).
-NEUTRAL — sem sinal claro, manter DCA normal.
-RISK OFF — mercado em alerta, reduzir exposição.
-EXTREME RISK / EUPHORIA — topo de ciclo provável, não aumentar posição.">?</span>
+ZONA DE CAPITULAÇÃO — histórica e rara, excelente para acumular.
+COMPRA AGRESSIVA / MODERADA / LEVE — sinal de compra com força variável.
+NEUTRO — sem sinal claro, manter DCA normal.
+RISCO ELEVADO — mercado em alerta, cautela.
+RISCO EXTREMO / EUFORIA — topo de ciclo provável, não aumentar posição.
+
+O viés indica o que o sistema sugere operacionalmente com base nos dados.">?</span>
+          </div>
+          <div class="ctx-regime-value" id="ctx-regime">—</div>
+          <div class="ctx-bias" id="ctx-bias">—</div>
         </div>
-        <div class="hero-value" id="h-regime">—</div>
-        <div class="hero-sub" id="h-bias">—</div>
-      </div>
-
-      <div class="hero-card" id="hero-score">
-        <div class="hero-label">
-          Score Ponderado
-          <span class="tip-icon has-tooltip" data-tooltip="Média ponderada dos scores de todos os indicadores ativos.
-
-Positivo → confluência de sinais de compra.
-Negativo → confluência de sinais de venda ou alerta.
-Próximo de zero → mercado sem direção clara.
-
-O Risco (LOW / MEDIUM / HIGH / EXTREME) é derivado deste score em conjunto com o Regime.">?</span>
+        <div class="ctx-meta">
+          <div id="ctx-risk">—</div>
+          <div id="ctx-score">—</div>
+          <div class="ctx-price" id="ctx-price">—</div>
         </div>
-        <div class="hero-value" id="h-score">—</div>
-        <div class="hero-sub" id="h-risk">—</div>
       </div>
-
-      <div class="hero-card" style="border-left-color:var(--orange)">
-        <div class="hero-label">
-          Preço BTC
-          <span class="tip-icon has-tooltip" data-tooltip="Preço atual do Bitcoin em dólares americanos, obtido da Binance em tempo real.
-
-Usado como referência para cálculos de Mayer Multiple e posição relativa às médias móveis.
-
-Score bruto = soma direta dos pontos. Score ponderado = ajustado pelo peso de cada indicador no regime atual.">?</span>
-        </div>
-        <div class="hero-value" id="h-price" style="color:var(--orange)">—</div>
-        <div class="hero-sub" id="h-raw">—</div>
-      </div>
+      <div class="ctx-sep"></div>
+      <ul class="ctx-insights" id="ctx-insights"></ul>
+      <div class="ctx-reading" id="ctx-reading"></div>
     </div>
+
+    <div class="section-label">Dimensões</div>
+    <div class="dim-scores" id="dim-scores"></div>
 
     <div class="section-label">Indicadores</div>
-    <div class="ind-grid" id="indicators-body"></div>
-
-    <div class="section-label">Regras Disparadas</div>
-    <div class="card">
-      <ul class="rules-list" id="rules-list"></ul>
-    </div>
+    <div id="indicators-grouped"></div>
 
     <div class="section-label">Playbook Tático</div>
     <div class="card">
@@ -721,12 +911,6 @@ Score bruto = soma direta dos pontos. Score ponderado = ajustado pelo peso de ca
           <ul class="playbook-items avoid" id="playbook-avoid"></ul>
         </div>
       </div>
-    </div>
-
-    <div class="section-label">Leitura Final</div>
-    <div class="summary-card">
-      <div class="card-title">Análise Executiva</div>
-      <div class="summary-text" id="summary-text"></div>
     </div>
 
   </div>
