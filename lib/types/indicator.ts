@@ -138,6 +138,27 @@ export interface EtfFlowValue {
 
 export type EtfFlowResult = IndicatorResult<EtfFlowValue>;
 
+export interface PiCycleValue {
+  ma111: number;
+  ma350: number;
+  doubledMa350: number;
+  ratio: number;
+  gapPct: number;
+  crossed: boolean;
+}
+
+export type PiCycleResult = IndicatorResult<PiCycleValue>;
+
+export interface BollingerValue {
+  sma20: number;
+  upper: number;
+  lower: number;
+  percentB: number;
+  bandwidth: number;
+}
+
+export type BollingerResult = IndicatorResult<BollingerValue>;
+
 // ─── Agregado de todos os indicadores ────────────────────────
 
 export interface AllIndicators {
@@ -154,6 +175,8 @@ export interface AllIndicators {
   mayerMultiple: MayerMultipleResult;
   liquidations: LiquidationsResult;
   etfFlow: EtfFlowResult;
+  piCycle: PiCycleResult;
+  bollinger: BollingerResult;
   marketRegime: MarketRegimeResult;
   compositeSignal: CompositeSignalResult;
 }

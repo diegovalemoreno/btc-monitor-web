@@ -17,6 +17,8 @@ export type IndicatorKey =
   | "mayerMultiple"
   | "liquidations"
   | "etfFlow"
+  | "piCycle"
+  | "bollinger"
   | "marketRegime"
   | "compositeSignal";
 
@@ -34,10 +36,12 @@ export const WEIGHTS: Record<IndicatorKey, number> = {
   fearGreed:        1.5,
   marketRegime:     1.5,
   etfFlow:          1.5,
+  piCycle:          1.5,
 
   // Peso baixo — confirmação técnica isolada
   weeklyCandle:     1,
   movingAverages:   1,
   hashRibbon:       1,
   sellerPressure:   1,
+  bollinger:        1,
 };

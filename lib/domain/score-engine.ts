@@ -101,6 +101,8 @@ export function calculateTotalScore(indicators: AllIndicators): ScoreResult {
     mayerMultiple:   indicators.mayerMultiple,
     liquidations:    indicators.liquidations,
     etfFlow:         indicators.etfFlow,
+    piCycle:         indicators.piCycle,
+    bollinger:       indicators.bollinger,
     marketRegime:    indicators.marketRegime,
     compositeSignal: indicators.compositeSignal,
   };

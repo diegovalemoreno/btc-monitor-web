@@ -29,6 +29,8 @@ function indicatorsToScores(ind: AllIndicators): IndicatorScore[] {
     ["Pressão venda",     ind.sellerPressure],
     ["Médias Móveis",     ind.movingAverages],
     ["ETF Institucional", ind.etfFlow],
+    ["Pi Cycle Top",      ind.piCycle],
+    ["Bollinger %B",      ind.bollinger],
     ["Regime de Mercado", ind.marketRegime],
     ["Sinais Compostos",  ind.compositeSignal],
   ];
