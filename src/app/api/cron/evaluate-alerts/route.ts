@@ -6,7 +6,7 @@ import { evaluateAndDispatchAlerts } from '@/services/alert-evaluation'
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
 
-export async function POST(request: NextRequest) {
+export async function GET(request: NextRequest) {
   if (!validateCronSecret(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
