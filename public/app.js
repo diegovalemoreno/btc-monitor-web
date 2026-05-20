@@ -36,6 +36,12 @@ const TOOLTIPS = {
   "Regime de Mercado": "Classificação geral do momento atual do mercado, derivada da combinação de todos os indicadores.\n\nCAPTULATION ZONE = zona de capitulação histórica (raríssima, excelente oportunidade).\nTACTICAL BUY = sinal de compra com força variável.\nNEUTRAL = sem sinal claro, manter DCA normal.\nRISK OFF / EXTREME RISK = cautela, reduzir exposição.\nEUPHORIA ZONE = topo de ciclo provável, não aumentar posição.",
 
   "Sinais Compostos": "Confluência de múltiplos indicadores extremos ao mesmo tempo.\n\nQuando vários indicadores batem limites históricos juntos (ex: medo extremo + MVRV < 1 + Mayer < 0,8), o sinal de compra é muito mais confiável do que qualquer indicador isolado.\nCAPTULATION ZONE = 3 indicadores de fundo ativos juntos.\nEUPHORIA ZONE = 3 indicadores de topo ativos juntos.",
+
+  "Long/Short Ratio": "Proporção de traders com posições compradas (long) versus vendidas (short) na Binance Futures.\n\nRatio acima de 1,5 = mercado lotado de apostas na alta = risco elevado (posição contrária).\nRatio abaixo de 0,7 = maioria apostando na queda = sinal contrário de possível reversão para cima.\n\nMercados com todos do mesmo lado costumam surpreender na direção oposta.",
+
+  "BTC Dominância": "Percentual do Bitcoin no valor total de todo o mercado de criptomoedas.\n\nAcima de 60% = BTC season — Bitcoin lidera o mercado, bom contexto para acumular.\nAbaixo de 45% = Alt season — altcoins outperformando, fase tardia de ciclo de alta.\nAbaixo de 40% = euforia extrema nas altcoins = provável topo de ciclo se aproximando.",
+
+  "Stablecoin Ratio": "Compara o tamanho do mercado de stablecoins (USDT, USDC, DAI) com o market cap do Bitcoin.\n\nSSR baixo (< 4) = muito dinheiro parado em stablecoins esperando para entrar no mercado = força compradora disponível = bullish.\nSSR alto (> 10) = pouco dinheiro relativo em stablecoins = pouco combustível para subida.",
 };
 
 function formatUSD(n) {

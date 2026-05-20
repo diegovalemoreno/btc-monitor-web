@@ -20,6 +20,9 @@ export type IndicatorKey =
   | "piCycle"
   | "bollinger"
   | "dxy"
+  | "longShortRatio"
+  | "btcDominance"
+  | "stablecoinRatio"
   | "marketRegime"
   | "compositeSignal";
 
@@ -38,6 +41,9 @@ export const WEIGHTS: Record<IndicatorKey, number> = {
   marketRegime:     1.5,
   etfFlow:          1.5,
   piCycle:          1.5,
+  longShortRatio:   1.5,
+
+
 
   // Peso baixo — confirmação técnica isolada
   weeklyCandle:     1,
@@ -46,4 +52,6 @@ export const WEIGHTS: Record<IndicatorKey, number> = {
   sellerPressure:   1,
   bollinger:        1,
   dxy:              1,
+  btcDominance:     1,
+  stablecoinRatio:  1,
 };

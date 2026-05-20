@@ -167,6 +167,25 @@ export interface DxyValue {
 
 export type DxyResult = IndicatorResult<DxyValue>;
 
+export interface LongShortRatioValue {
+  ratio: number;
+  longPct: number;
+  shortPct: number;
+}
+export type LongShortRatioResult = IndicatorResult<LongShortRatioValue>;
+
+export interface BtcDominanceValue {
+  dominancePct: number;
+}
+export type BtcDominanceResult = IndicatorResult<BtcDominanceValue>;
+
+export interface StablecoinRatioValue {
+  ssr: number;
+  btcMarketCap: number;
+  stablecoinMarketCap: number;
+}
+export type StablecoinRatioResult = IndicatorResult<StablecoinRatioValue>;
+
 // ─── Agregado de todos os indicadores ────────────────────────
 
 export interface AllIndicators {
@@ -186,6 +205,9 @@ export interface AllIndicators {
   piCycle: PiCycleResult;
   bollinger: BollingerResult;
   dxy: DxyResult;
+  longShortRatio: LongShortRatioResult;
+  btcDominance: BtcDominanceResult;
+  stablecoinRatio: StablecoinRatioResult;
   marketRegime: MarketRegimeResult;
   compositeSignal: CompositeSignalResult;
 }

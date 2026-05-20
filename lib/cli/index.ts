@@ -23,6 +23,9 @@ import { fetchEtfFlow } from "../adapters/etf-flows.adapter";
 import { fetchPiCycle } from "../adapters/pi-cycle.adapter";
 import { fetchBollinger } from "../adapters/bollinger.adapter";
 import { fetchDxy } from "../adapters/dxy.adapter";
+import { fetchLongShortRatio } from "../adapters/long-short-ratio.adapter";
+import { fetchBtcDominance } from "../adapters/btc-dominance.adapter";
+import { fetchStablecoinRatio } from "../adapters/stablecoin-ratio.adapter";
 import { buildMvrv } from "../adapters/mvrv.adapter";
 import { buildMayer } from "../adapters/mayer.adapter";
 
@@ -52,6 +55,9 @@ import {
   PiCycleResult,
   BollingerResult,
   DxyResult,
+  LongShortRatioResult,
+  BtcDominanceResult,
+  StablecoinRatioResult,
 } from "../types/indicator";
 import { formatUSD } from "../utils/date";
 
@@ -106,6 +112,9 @@ export async function gatherReport(): Promise<MonitorReport> {
     piCycle,
     bollinger,
     dxy,
+    longShortRatio,
+    btcDominance,
+    stablecoinRatio,
   ] = await Promise.all([
     fetchFearGreed(),
     priceForCalc > 0
@@ -130,6 +139,9 @@ export async function gatherReport(): Promise<MonitorReport> {
       ? fetchBollinger(priceForCalc)
       : Promise.resolve(priceUnavailable<BollingerResult>({}, "Bollinger %B")),
     fetchDxy(),
+    fetchLongShortRatio(),
+    fetchBtcDominance(),
+    fetchStablecoinRatio(),
   ]);
 
   // MVRV é derivado: price atual / realized price (sem nova chamada de API)
@@ -176,6 +188,9 @@ export async function gatherReport(): Promise<MonitorReport> {
     piCycle,
     bollinger,
     dxy,
+    longShortRatio,
+    btcDominance,
+    stablecoinRatio,
     marketRegime: { status: "unknown", score: 0 },
     compositeSignal: { status: "unknown", score: 0 },
   };
@@ -238,6 +253,9 @@ export async function runMonitor(): Promise<string> {
   push(row("Pi Cycle Top",          indicators.piCycle));
   push(row("Bollinger %B",          indicators.bollinger));
   push(row("DXY (Dólar Index)",     indicators.dxy));
+  push(row("Long/Short Ratio",      indicators.longShortRatio));
+  push(row("BTC Dominância",        indicators.btcDominance));
+  push(row("Stablecoin Ratio",      indicators.stablecoinRatio));
   push(row("Regime de Mercado",     indicators.marketRegime));
   push();
   push(row("Sinais Compostos",      indicators.compositeSignal));

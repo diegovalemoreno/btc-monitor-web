@@ -32,6 +32,9 @@ function indicatorsToScores(ind: AllIndicators): IndicatorScore[] {
     ["Pi Cycle Top",      ind.piCycle],
     ["Bollinger %B",      ind.bollinger],
     ["DXY (Dólar Index)", ind.dxy],
+    ["Long/Short Ratio",  ind.longShortRatio],
+    ["BTC Dominância",    ind.btcDominance],
+    ["Stablecoin Ratio",  ind.stablecoinRatio],
     ["Regime de Mercado", ind.marketRegime],
     ["Sinais Compostos",  ind.compositeSignal],
   ];

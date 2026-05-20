@@ -104,6 +104,9 @@ export function calculateTotalScore(indicators: AllIndicators): ScoreResult {
     piCycle:         indicators.piCycle,
     bollinger:       indicators.bollinger,
     dxy:             indicators.dxy,
+    longShortRatio:  indicators.longShortRatio,
+    btcDominance:    indicators.btcDominance,
+    stablecoinRatio: indicators.stablecoinRatio,
     marketRegime:    indicators.marketRegime,
     compositeSignal: indicators.compositeSignal,
   };
