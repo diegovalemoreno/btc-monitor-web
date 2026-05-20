@@ -130,6 +130,8 @@ function render(signal) {
   renderRules(signal.triggeredRules);
   renderPlaybook(signal.playbook);
   $("summary-text").textContent = signal.summary || "—";
+  _lastSignal = signal;
+  updateShareLinks(signal);
 }
 
 function setState(state, errorMsg) {
@@ -204,6 +206,55 @@ document.addEventListener("click", (e) => {
     _tapTarget = null;
   }
 });
+
+// ── Share ─────────────────────────────────────────────────────
+let _lastSignal = null;
+const SITE_URL = "https://btc-monitor-web.vercel.app";
+
+function buildShareText(signal) {
+  const regime = signal.regime.replace(/_/g, " ");
+  const score  = scoreLabel(signal.score.weighted);
+  const price  = formatUSD(signal.btcPrice);
+  return `₿ BTC Signal Engine\nRegime: ${regime} | Score: ${score} | BTC: ${price}\n${SITE_URL}`;
+}
+
+function updateShareLinks(signal) {
+  const text = buildShareText(signal);
+  const wa = $("share-whatsapp");
+  const tg = $("share-telegram");
+  const tw = $("share-twitter");
+  if (wa) wa.href = `https://wa.me/?text=${encodeURIComponent(text)}`;
+  if (tg) tg.href = `https://t.me/share/url?url=${encodeURIComponent(SITE_URL)}&text=${encodeURIComponent(text)}`;
+  if (tw) tw.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+}
+
+const shareBtnEl  = $("share-btn");
+const shareMenuEl = $("share-menu");
+const shareCopyEl = $("share-copy");
+
+if (shareBtnEl && shareMenuEl) {
+  shareBtnEl.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const open = shareMenuEl.classList.toggle("open");
+    shareBtnEl.classList.toggle("active", open);
+  });
+  document.addEventListener("click", () => {
+    shareMenuEl.classList.remove("open");
+    shareBtnEl.classList.remove("active");
+  });
+}
+
+if (shareCopyEl) {
+  shareCopyEl.addEventListener("click", async () => {
+    const text = _lastSignal ? buildShareText(_lastSignal) : SITE_URL;
+    try {
+      await navigator.clipboard.writeText(text);
+      const orig = shareCopyEl.innerHTML;
+      shareCopyEl.textContent = "✓  Copiado!";
+      setTimeout(() => { shareCopyEl.innerHTML = orig; }, 2000);
+    } catch (_) {}
+  });
+}
 
 // ── Fetch ─────────────────────────────────────────────────────
 async function fetchSignal() {
