@@ -81,7 +81,7 @@ function renderIndicators(indicators) {
     return `
     <tr>
       <td class="ind-name has-tooltip" ${tipAttr}>${ind.name}${tip ? ' <span class="tip-icon">?</span>' : ''}</td>
-      <td class="ind-score ${scoreClass(ind.score)}">${scoreLabel(ind.score)}</td>
+      <td class="ind-score ${scoreClass(ind.score)}"><span class="score-badge">${scoreLabel(ind.score)}</span></td>
       <td class="ind-summary">${ind.summary}</td>
     </tr>`;
   }).join("");
@@ -110,8 +110,15 @@ function render(signal) {
   $("h-regime").textContent = signal.regime.replace(/_/g, " ");
   $("h-regime").className = `hero-value regime-${signal.regime}`;
   $("h-bias").textContent = `Viés: ${signal.actionBias.replace(/_/g, " ")}`;
+  const regimeCard = document.getElementById("hero-regime");
+  if (regimeCard) regimeCard.style.borderLeftColor = `var(--regime-${signal.regime})`;
   $("h-score").textContent = scoreLabel(signal.score.weighted);
   $("h-score").className = `hero-value ${scoreClass(signal.score.weighted)}`;
+  const scoreCard = document.getElementById("hero-score");
+  if (scoreCard) {
+    const w = signal.score.weighted;
+    scoreCard.style.borderLeftColor = w > 0 ? "var(--green)" : w < 0 ? "var(--red)" : "var(--border)";
+  }
   $("h-risk").innerHTML = `Risco: <span class="risk-${signal.riskLevel}">${signal.riskLevel}</span>`;
   $("h-raw").textContent = `Score bruto: ${scoreLabel(signal.score.raw)}`;
   $("h-price").textContent = formatUSD(signal.btcPrice);
