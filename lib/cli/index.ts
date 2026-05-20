@@ -19,6 +19,7 @@ import { fetchOpenInterest } from "../adapters/open-interest.adapter";
 import { fetchRealizedPrice } from "../adapters/realized-price.adapter";
 import { fetchHashRibbon } from "../adapters/hash-ribbon.adapter";
 import { fetchLiquidations } from "../adapters/liquidations.adapter";
+import { fetchEtfFlow } from "../adapters/etf-flows.adapter";
 import { buildMvrv } from "../adapters/mvrv.adapter";
 import { buildMayer } from "../adapters/mayer.adapter";
 
@@ -95,6 +96,7 @@ export async function gatherReport(): Promise<MonitorReport> {
     realizedPrice,
     hashRibbon,
     liquidations,
+    etfFlow,
   ] = await Promise.all([
     fetchFearGreed(),
     priceForCalc > 0
@@ -111,6 +113,7 @@ export async function gatherReport(): Promise<MonitorReport> {
       : Promise.resolve(priceUnavailable<RealizedPriceResult>({}, "Preço Realizado")),
     fetchHashRibbon(),
     fetchLiquidations(),
+    fetchEtfFlow(),
   ]);
 
   // MVRV é derivado: price atual / realized price (sem nova chamada de API)
@@ -153,6 +156,7 @@ export async function gatherReport(): Promise<MonitorReport> {
     hashRibbon,
     mayerMultiple,
     liquidations,
+    etfFlow,
     // placeholders — preenchidos abaixo
     marketRegime: { status: "unknown", score: 0 },
     compositeSignal: { status: "unknown", score: 0 },
@@ -212,6 +216,7 @@ export async function runMonitor(): Promise<string> {
   push(row("Hash Ribbon",           indicators.hashRibbon));
   push(row("Pressão vendedora",     indicators.sellerPressure));
   push(row("Médias Móveis",         indicators.movingAverages));
+  push(row("ETF Institucional",     indicators.etfFlow));
   push(row("Regime de Mercado",     indicators.marketRegime));
   push();
   push(row("Sinais Compostos",      indicators.compositeSignal));

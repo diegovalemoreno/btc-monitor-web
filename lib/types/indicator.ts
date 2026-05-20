@@ -128,6 +128,16 @@ export type LiquidationsResult    = IndicatorResult<LiquidationsValue>;
 export type MarketRegimeResult    = IndicatorResult<MarketRegimeValue>;
 export type CompositeSignalResult = IndicatorResult<CompositeSignalValue>;
 
+export interface EtfFlowValue {
+  totalDollarVolUsd: number;
+  avg5dDollarVolUsd: number;
+  volumeRatio: number;
+  etfUp: boolean;
+  score: number;
+}
+
+export type EtfFlowResult = IndicatorResult<EtfFlowValue>;
+
 // ─── Agregado de todos os indicadores ────────────────────────
 
 export interface AllIndicators {
@@ -143,6 +153,7 @@ export interface AllIndicators {
   hashRibbon: HashRibbonResult;
   mayerMultiple: MayerMultipleResult;
   liquidations: LiquidationsResult;
+  etfFlow: EtfFlowResult;
   marketRegime: MarketRegimeResult;
   compositeSignal: CompositeSignalResult;
 }

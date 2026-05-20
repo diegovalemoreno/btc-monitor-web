@@ -16,6 +16,7 @@ export type IndicatorKey =
   | "hashRibbon"
   | "mayerMultiple"
   | "liquidations"
+  | "etfFlow"
   | "marketRegime"
   | "compositeSignal";
 
@@ -26,12 +27,13 @@ export const WEIGHTS: Record<IndicatorKey, number> = {
   mayerMultiple:    2,
   compositeSignal:  2,
 
-  // Peso médio — derivativos / sentimento / regime
+  // Peso médio — derivativos / sentimento / regime / institucional
   fundingRate:      1.5,
   openInterest:     1.5,
   liquidations:     1.5,
   fearGreed:        1.5,
   marketRegime:     1.5,
+  etfFlow:          1.5,
 
   // Peso baixo — confirmação técnica isolada
   weeklyCandle:     1,

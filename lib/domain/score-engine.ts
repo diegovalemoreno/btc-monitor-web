@@ -100,6 +100,7 @@ export function calculateTotalScore(indicators: AllIndicators): ScoreResult {
     hashRibbon:      indicators.hashRibbon,
     mayerMultiple:   indicators.mayerMultiple,
     liquidations:    indicators.liquidations,
+    etfFlow:         indicators.etfFlow,
     marketRegime:    indicators.marketRegime,
     compositeSignal: indicators.compositeSignal,
   };

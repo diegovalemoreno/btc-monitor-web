@@ -28,6 +28,7 @@ function indicatorsToScores(ind: AllIndicators): IndicatorScore[] {
     ["Hash Ribbon",       ind.hashRibbon],
     ["Pressão venda",     ind.sellerPressure],
     ["Médias Móveis",     ind.movingAverages],
+    ["ETF Institucional", ind.etfFlow],
     ["Regime de Mercado", ind.marketRegime],
     ["Sinais Compostos",  ind.compositeSignal],
   ];
