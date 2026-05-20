@@ -487,24 +487,42 @@
       font-family: var(--font-sans);
     }
 
-    /* ─── Responsive ─────────────────────────────── */
+    /* ─── Overflow / base fixes ─────────────────── */
+    body           { overflow-x: hidden; }
+    .summary-text  { overflow-wrap: break-word; word-break: break-word; }
+    .ind-card      { min-width: 0; }
+    .ind-card-summary { overflow-wrap: break-word; }
+    .tooltip-box   { max-width: min(320px, calc(100vw - 24px)); }
+
+    /* ─── Responsive — small first, overrides cascade down ── */
     @media (max-width: 780px) {
       .ind-grid { grid-template-columns: repeat(2, 1fr); }
     }
+
     @media (max-width: 600px) {
-      .hero-grid      { grid-template-columns: 1fr; }
-      .playbook-grid  { grid-template-columns: 1fr; }
+      .hero-grid     { grid-template-columns: 1fr; }
+      .playbook-grid { grid-template-columns: 1fr; }
+      .hero-value    { font-size: 26px; }
     }
+
+    @media (max-width: 480px) {
+      .container     { padding: 16px 14px 40px; }
+      .header-inner  { padding: 0 14px; }
+      .card, .summary-card { padding: 14px 16px; }
+      .logo-sub      { display: none; }
+      .timestamp     { display: none; }
+      .section-label { margin: 18px 0 8px; }
+      #refresh       { min-height: 36px; padding: 6px 14px; }
+      .hero-card     { padding: 14px 16px; }
+      .hero-value    { font-size: 24px; }
+      .rule-item     { padding: 10px 12px; }
+      .playbook-panel { padding: 12px 14px; }
+      .playbook-items li { padding: 6px 0; }
+      .ind-card      { padding: 10px 12px; }
+    }
+
     @media (max-width: 420px) {
       .ind-grid { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 480px) {
-      .container      { padding: 20px 16px 40px; }
-      .header-inner   { padding: 0 16px; }
-      .card, .summary-card { padding: 16px; }
-      .hero-value     { font-size: 19px; }
-      .timestamp      { display: none; }
-      .section-label  { margin-top: 20px; }
     }
   </style>
 </head>

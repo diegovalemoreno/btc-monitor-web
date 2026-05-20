@@ -186,6 +186,25 @@ document.addEventListener("scroll", () => {
   if (hovered) positionTooltip(hovered); else hideTooltip();
 }, { passive: true });
 
+// tap-to-show for touch devices
+let _tapTarget = null;
+document.addEventListener("click", (e) => {
+  const el = e.target.closest("[data-tooltip]");
+  if (el) {
+    if (_tapTarget === el && tooltipEl && tooltipEl.style.display === "block") {
+      hideTooltip();
+      _tapTarget = null;
+    } else {
+      showTooltip(el, el.dataset.tooltip);
+      _tapTarget = el;
+    }
+    e.stopPropagation();
+  } else {
+    hideTooltip();
+    _tapTarget = null;
+  }
+});
+
 // ── Fetch ─────────────────────────────────────────────────────
 async function fetchSignal() {
   const btn = $("refresh");
