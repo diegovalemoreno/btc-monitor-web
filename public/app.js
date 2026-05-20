@@ -143,17 +143,37 @@ function extractReading(summary) {
 
 // ── Scores Dimensionais ───────────────────────────────────────
 const DIM_DEFS = [
-  { key: "sentiment",   label: "Sentimento",  cap: 6 },
-  { key: "derivatives", label: "Derivativos", cap: 8 },
-  { key: "onchain",     label: "On-chain",    cap: 10 },
-  { key: "trend",       label: "Tendência",   cap: 10 },
+  {
+    key: "sentiment",
+    label: "Sentimento",
+    cap: 6,
+    tooltip: "Agrega Fear & Greed, Long/Short Ratio e BTC Dominância.\n\nFavorável = medo elevado + shorts dominantes + Bitcoin liderando o mercado.\nAlerta = euforia + longs dominantes + altcoins em destaque.\n\nSentimento é contrário por natureza — extremos costumam ser sinais de reversão.",
+  },
+  {
+    key: "derivatives",
+    label: "Derivativos",
+    cap: 8,
+    tooltip: "Agrega Funding Rate, Open Interest, Liquidações e Stablecoin Ratio.\n\nFavorável = funding negativo + OI em queda + longs liquidados + stablecoins aguardando entrada.\nAlerta = funding muito alto + OI crescendo + mercado sobreaquecido.\n\nDerivativos refletem alavancagem acumulada — principal fator de risco de curto prazo.",
+  },
+  {
+    key: "onchain",
+    label: "On-chain",
+    cap: 10,
+    tooltip: "Agrega MVRV, Preço Realizado, Hash Ribbon, Pressão de Venda e ETF Institucional.\n\nFavorável = MVRV baixo + preço próximo do realizado + mineradores se recuperando + instituições comprando.\nAlerta = MVRV em zona de euforia + whales distribuindo.\n\nOn-chain revela o comportamento real dos holders de longo prazo — o dado mais difícil de falsificar.",
+  },
+  {
+    key: "trend",
+    label: "Tendência",
+    cap: 10,
+    tooltip: "Agrega Médias Móveis, Variação 7d, Bollinger %B, Mayer Multiple e Pi Cycle Top.\n\nFavorável = preço abaixo das médias históricas + Mayer < 0,8 + Bollinger em oversold.\nAlerta = preço muito acima das médias + Mayer > 2,4 + Pi Cycle próximo do cruzamento histórico.\n\nTendência mostra a saúde estrutural do movimento — contexto de onde o preço está no ciclo.",
+  },
 ];
 
 function renderDimScores(dimScores) {
   if (!dimScores) return;
   const container = $("dim-scores");
 
-  container.innerHTML = DIM_DEFS.map(({ key, label, cap }) => {
+  container.innerHTML = DIM_DEFS.map(({ key, label, cap, tooltip }) => {
     const score = dimScores[key] ?? 0;
     const pct   = Math.min(50, (Math.abs(score) / cap) * 50);
 
@@ -166,9 +186,11 @@ function renderDimScores(dimScores) {
       ? `left:50%;width:${pct}%;background:${color}`
       : `left:${50 - pct}%;width:${pct}%;background:${color}`;
 
-    const sl = score > 0 ? `+${score}` : String(score);
+    const sl       = score > 0 ? `+${score}` : String(score);
+    const tipAttr  = tooltip ? `data-tooltip="${escapeHtml(tooltip)}"` : "";
+    const tipClass = tooltip ? " has-tooltip" : "";
 
-    return `<div class="dim-item">
+    return `<div class="dim-item${tipClass}" ${tipAttr} style="cursor:${tooltip ? "help" : "default"}">
       <div class="dim-label">${label}</div>
       <div class="dim-bar-track">
         <div class="dim-bar-fill" style="${fillStyle}"></div>
