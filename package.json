@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "btc-monitor": "github:diegovalemoreno/btc-monitor"
+    "dotenv": "^16.4.5"
   },
   "devDependencies": {
     "@vercel/node": "^5.0.0",

@@ -8,6 +8,6 @@
     "skipLibCheck": true,
     "resolveJsonModule": true
   },
-  "include": ["api/**/*"],
+  "include": ["api/**/*", "lib/**/*"],
   "exclude": ["node_modules"]
 }
