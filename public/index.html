@@ -5,40 +5,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BTC Signal Engine · Dashboard</title>
   <style>
-    /* ─── Design tokens ─────────────────────────── */
+    /* ─── Design tokens (letabuild palette) ────── */
     :root {
-      --bg:         #08080d;
-      --surface:    #0f0f18;
-      --surface2:   #151520;
-      --surface3:   #1c1c2a;
-      --border:     #252535;
-      --border-dim: #191926;
+      --bg:         #0a0a0a;
+      --surface:    #111111;
+      --surface2:   #161616;
+      --surface3:   #1e1e1e;
+      --border:     rgba(224,138,58,0.13);
+      --border-dim: rgba(224,138,58,0.07);
+      --border-solid: #1e1e1e;
 
-      --text:       #dde1f0;
-      --text-sec:   #7a82a0;
-      --text-muted: #404460;
+      --text:       #e8e0d5;
+      --text-sec:   #b0a090;
+      --text-muted: #5a5040;
 
-      --orange:     #f7931a;
-      --green:      #00cc78;
-      --red:        #ef4444;
-      --yellow:     #e8a020;
+      --orange:     #e08a3a;
+      --orange-dim: rgba(224,138,58,0.15);
 
-      --regime-CAPITULATION_ZONE:       #00cc78;
-      --regime-TACTICAL_BUY_AGGRESSIVE: #00cc78;
-      --regime-TACTICAL_BUY_MODERATE:   #44cc88;
-      --regime-TACTICAL_BUY_LIGHT:      #88bb66;
-      --regime-NEUTRAL:                 #404460;
-      --regime-RISK_OFF:                #e8a020;
-      --regime-EXTREME_RISK:            #ef4444;
-      --regime-OVERLEVERAGED_MARKET:    #ef4444;
-      --regime-EUPHORIA_ZONE:           #ef4444;
+      /* signal colors — letabuild exact */
+      --buy-strong: #00C853;
+      --buy:        #69F0AE;
+      --neutral:    #FFD600;
+      --sell:       #FF6D00;
+      --sell-strong:#FF1744;
 
-      --font-sans: Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+      /* regime → signal mapping */
+      --regime-CAPITULATION_ZONE:       #00C853;
+      --regime-TACTICAL_BUY_AGGRESSIVE: #00C853;
+      --regime-TACTICAL_BUY_MODERATE:   #69F0AE;
+      --regime-TACTICAL_BUY_LIGHT:      #a8e6c8;
+      --regime-NEUTRAL:                 #FFD600;
+      --regime-RISK_OFF:                #FF6D00;
+      --regime-EXTREME_RISK:            #FF1744;
+      --regime-OVERLEVERAGED_MARKET:    #FF1744;
+      --regime-EUPHORIA_ZONE:           #FF1744;
+
+      --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
       --font-mono: 'SF Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace;
 
       --radius:    10px;
-      --radius-sm: 6px;
-      --shadow:    0 1px 3px rgba(0,0,0,0.5), 0 4px 16px rgba(0,0,0,0.3);
+      --radius-sm: 8px;
+      --shadow:    0 1px 4px rgba(0,0,0,0.6), 0 6px 20px rgba(0,0,0,0.4);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -57,9 +64,9 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(8,8,13,0.94);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background: rgba(10,10,10,0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--border);
     }
 
@@ -70,7 +77,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 58px;
+      height: 56px;
       gap: 16px;
     }
 
@@ -79,20 +86,20 @@
     .logo {
       font-size: 14px;
       font-weight: 700;
-      letter-spacing: -0.2px;
       display: flex;
       align-items: center;
       gap: 8px;
+      letter-spacing: -0.1px;
     }
 
     .logo-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
       width: 26px;
       height: 26px;
       background: var(--orange);
-      border-radius: 6px;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       color: #000;
       font-size: 14px;
       font-weight: 900;
@@ -102,11 +109,11 @@
     .logo-sub {
       font-size: 10px;
       color: var(--text-muted);
-      letter-spacing: 0.5px;
+      letter-spacing: 0.4px;
       padding-left: 34px;
     }
 
-    .header-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
     .timestamp {
       font-size: 11px;
@@ -114,15 +121,15 @@
       font-family: var(--font-mono);
       background: var(--surface2);
       border: 1px solid var(--border);
-      padding: 3px 10px;
+      padding: 4px 10px;
       border-radius: 20px;
       white-space: nowrap;
     }
 
     #refresh {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      color: var(--text);
+      background: transparent;
+      border: 1px solid var(--orange-dim);
+      color: var(--text-sec);
       padding: 5px 14px;
       border-radius: var(--radius-sm);
       cursor: pointer;
@@ -132,27 +139,27 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      transition: border-color 0.15s, background 0.15s;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
       white-space: nowrap;
     }
-    #refresh:hover { border-color: var(--orange); background: var(--surface3); }
-    #refresh:disabled { opacity: 0.35; cursor: not-allowed; }
+    #refresh:hover { border-color: var(--orange); color: var(--orange); background: rgba(224,138,58,0.06); }
+    #refresh:disabled { opacity: 0.3; cursor: not-allowed; }
 
     /* ─── Layout ────────────────────────────────── */
     .container {
       max-width: 960px;
       margin: 0 auto;
-      padding: 28px 24px 56px;
+      padding: 28px 24px 60px;
     }
 
-    /* ─── Section dividers ──────────────────────── */
+    /* ─── Section labels ─────────────────────────── */
     .section-label {
       font-size: 10px;
       font-weight: 600;
       letter-spacing: 1.8px;
       text-transform: uppercase;
       color: var(--text-muted);
-      margin: 24px 0 10px;
+      margin: 28px 0 10px;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -164,7 +171,7 @@
       background: var(--border-dim);
     }
 
-    /* ─── Cards ─────────────────────────────────── */
+    /* ─── Cards ──────────────────────────────────── */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -191,7 +198,7 @@
     .hero-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-left: 3px solid var(--border);
+      border-left: 3px solid var(--border-solid);
       border-radius: var(--radius);
       padding: 18px 20px;
       box-shadow: var(--shadow);
@@ -200,17 +207,20 @@
     .hero-label {
       font-size: 10px;
       font-weight: 600;
-      letter-spacing: 1.4px;
+      letter-spacing: 1.3px;
       text-transform: uppercase;
       color: var(--text-muted);
       margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
 
     .hero-value {
-      font-size: 22px;
+      font-size: 21px;
       font-weight: 700;
       line-height: 1.2;
-      letter-spacing: -0.5px;
+      letter-spacing: -0.4px;
       font-family: var(--font-mono);
     }
 
@@ -221,25 +231,25 @@
       font-family: var(--font-mono);
     }
 
-    /* ─── Regime / score / risk color classes ────── */
-    .regime-CAPITULATION_ZONE    { color: var(--green); }
-    .regime-TACTICAL_BUY_AGGRESSIVE { color: var(--green); }
-    .regime-TACTICAL_BUY_MODERATE   { color: #44cc88; }
-    .regime-TACTICAL_BUY_LIGHT      { color: #88bb66; }
-    .regime-NEUTRAL                 { color: var(--text-sec); }
-    .regime-RISK_OFF                { color: var(--yellow); }
-    .regime-EXTREME_RISK            { color: var(--red); }
-    .regime-OVERLEVERAGED_MARKET    { color: var(--red); }
-    .regime-EUPHORIA_ZONE           { color: var(--red); }
+    /* ─── Regime / score / risk colors ──────────── */
+    .regime-CAPITULATION_ZONE    { color: var(--buy-strong); }
+    .regime-TACTICAL_BUY_AGGRESSIVE { color: var(--buy-strong); }
+    .regime-TACTICAL_BUY_MODERATE   { color: var(--buy); }
+    .regime-TACTICAL_BUY_LIGHT      { color: #a8e6c8; }
+    .regime-NEUTRAL                 { color: var(--neutral); }
+    .regime-RISK_OFF                { color: var(--sell); }
+    .regime-EXTREME_RISK            { color: var(--sell-strong); }
+    .regime-OVERLEVERAGED_MARKET    { color: var(--sell-strong); }
+    .regime-EUPHORIA_ZONE           { color: var(--sell-strong); }
 
-    .score-pos { color: var(--green); }
-    .score-neg { color: var(--red); }
-    .score-zero { color: var(--text-sec); }
+    .score-pos  { color: var(--buy-strong); }
+    .score-neg  { color: var(--sell-strong); }
+    .score-zero { color: var(--neutral); }
 
-    .risk-LOW    { color: var(--green);  font-weight: 600; }
-    .risk-MEDIUM { color: #88bb66;       font-weight: 600; }
-    .risk-HIGH   { color: var(--yellow); font-weight: 600; }
-    .risk-EXTREME { color: var(--red);   font-weight: 600; }
+    .risk-LOW    { color: var(--buy-strong); font-weight: 600; }
+    .risk-MEDIUM { color: var(--buy);        font-weight: 600; }
+    .risk-HIGH   { color: var(--sell);       font-weight: 600; }
+    .risk-EXTREME { color: var(--sell-strong); font-weight: 600; }
 
     /* ─── Indicators table ──────────────────────── */
     table { width: 100%; border-collapse: collapse; }
@@ -280,15 +290,15 @@
       justify-content: center;
       min-width: 38px;
       padding: 2px 7px;
-      border-radius: 12px;
+      border-radius: 20px;
       font-size: 11px;
       font-weight: 700;
       font-family: var(--font-mono);
     }
 
-    .score-pos .score-badge { background: rgba(0,204,120,0.12); color: var(--green); }
-    .score-neg .score-badge { background: rgba(239,68,68,0.12);  color: var(--red); }
-    .score-zero .score-badge { background: var(--surface2); color: var(--text-sec); }
+    .score-pos .score-badge  { background: rgba(0,200,83,0.12);  color: var(--buy-strong); }
+    .score-neg .score-badge  { background: rgba(255,23,68,0.12);  color: var(--sell-strong); }
+    .score-zero .score-badge { background: rgba(255,214,0,0.10);  color: var(--neutral); }
 
     .ind-summary { font-size: 12px; color: var(--text-sec); padding-left: 20px; }
 
@@ -326,7 +336,7 @@
 
     .no-rules { color: var(--text-sec); font-size: 13px; }
 
-    /* ─── Playbook ──────────────────────────────── */
+    /* ─── Playbook ───────────────────────────────── */
     .playbook-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
     .playbook-panel {
@@ -335,12 +345,12 @@
       border: 1px solid;
     }
     .playbook-panel.allowed {
-      background: rgba(0,204,120,0.04);
-      border-color: rgba(0,204,120,0.16);
+      background: rgba(0,200,83,0.04);
+      border-color: rgba(0,200,83,0.16);
     }
     .playbook-panel.avoid {
-      background: rgba(239,68,68,0.04);
-      border-color: rgba(239,68,68,0.14);
+      background: rgba(255,23,68,0.04);
+      border-color: rgba(255,23,68,0.14);
     }
 
     .playbook-col-title {
@@ -350,8 +360,8 @@
       text-transform: uppercase;
       margin-bottom: 10px;
     }
-    .playbook-col-title.allowed { color: var(--green); }
-    .playbook-col-title.avoid   { color: var(--red); }
+    .playbook-col-title.allowed { color: var(--buy-strong); }
+    .playbook-col-title.avoid   { color: var(--sell-strong); }
 
     .playbook-items { list-style: none; }
     .playbook-items li {
@@ -366,7 +376,7 @@
     .playbook-items li:last-child { border-bottom: none; }
     .playbook-items.allowed li::before {
       content: "✓";
-      color: var(--green);
+      color: var(--buy-strong);
       font-weight: 700;
       font-size: 11px;
       flex-shrink: 0;
@@ -374,14 +384,14 @@
     }
     .playbook-items.avoid li::before {
       content: "✕";
-      color: var(--red);
+      color: var(--sell-strong);
       font-weight: 700;
       font-size: 11px;
       flex-shrink: 0;
       margin-top: 2px;
     }
 
-    /* ─── Leitura Final ─────────────────────────── */
+    /* ─── Leitura Final ──────────────────────────── */
     .summary-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -396,25 +406,25 @@
       line-height: 1.9;
       color: var(--text-sec);
       white-space: pre-wrap;
-      border-left: 2px solid var(--border);
+      border-left: 2px solid var(--border-solid);
       padding-left: 16px;
       margin-top: 12px;
     }
 
-    /* ─── Loading / error ───────────────────────── */
+    /* ─── Loading / error ────────────────────────── */
     #loading, #error-msg {
       text-align: center;
       padding: 80px 20px;
       color: var(--text-sec);
       font-size: 13px;
     }
-    #error-msg { color: var(--red); display: none; }
+    #error-msg { color: var(--sell-strong); display: none; }
     #dashboard { display: none; }
 
     .spinner {
       display: inline-block;
       width: 16px; height: 16px;
-      border: 2px solid var(--border);
+      border: 2px solid var(--border-solid);
       border-top-color: var(--orange);
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
@@ -423,7 +433,7 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ─── Tooltip ───────────────────────────────── */
+    /* ─── Tooltip ────────────────────────────────── */
     .has-tooltip { cursor: help; }
 
     .tip-icon {
@@ -433,18 +443,24 @@
       width: 14px; height: 14px;
       border-radius: 50%;
       background: var(--surface3);
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-solid);
       color: var(--text-muted);
       font-size: 9px;
       font-style: normal;
       flex-shrink: 0;
+      transition: border-color 0.15s, color 0.15s;
+      cursor: help;
+    }
+    .tip-icon:hover {
+      border-color: var(--orange);
+      color: var(--orange);
     }
 
     .tooltip-box {
       display: none;
       position: absolute;
       z-index: 9999;
-      max-width: 340px;
+      max-width: 320px;
       background: var(--surface3);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
@@ -453,23 +469,23 @@
       line-height: 1.7;
       color: var(--text-sec);
       white-space: pre-wrap;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.8);
       pointer-events: none;
       font-family: var(--font-sans);
     }
 
-    /* ─── Responsive ────────────────────────────── */
+    /* ─── Responsive ─────────────────────────────── */
     @media (max-width: 600px) {
-      .hero-grid { grid-template-columns: 1fr; }
-      .playbook-grid { grid-template-columns: 1fr; }
+      .hero-grid      { grid-template-columns: 1fr; }
+      .playbook-grid  { grid-template-columns: 1fr; }
     }
     @media (max-width: 480px) {
-      .container { padding: 20px 16px 40px; }
-      .header-inner { padding: 0 16px; }
+      .container      { padding: 20px 16px 40px; }
+      .header-inner   { padding: 0 16px; }
       .card, .summary-card { padding: 16px; }
-      .hero-value { font-size: 20px; }
-      .timestamp { display: none; }
-      .section-label { margin-top: 20px; }
+      .hero-value     { font-size: 19px; }
+      .timestamp      { display: none; }
+      .section-label  { margin-top: 20px; }
     }
   </style>
 </head>
@@ -505,17 +521,44 @@
 
     <div class="hero-grid">
       <div class="hero-card" id="hero-regime">
-        <div class="hero-label">Regime de Mercado</div>
+        <div class="hero-label">
+          Regime de Mercado
+          <span class="tip-icon has-tooltip" data-tooltip="Classificação geral do mercado derivada de todos os indicadores.
+
+CAPITULATION ZONE — capitulação histórica, rara e excelente para acumular.
+TACTICAL BUY — sinal de compra com força variável (AGGRESSIVE, MODERATE, LIGHT).
+NEUTRAL — sem sinal claro, manter DCA normal.
+RISK OFF — mercado em alerta, reduzir exposição.
+EXTREME RISK / EUPHORIA — topo de ciclo provável, não aumentar posição.">?</span>
+        </div>
         <div class="hero-value" id="h-regime">—</div>
         <div class="hero-sub" id="h-bias">—</div>
       </div>
+
       <div class="hero-card" id="hero-score">
-        <div class="hero-label">Score Ponderado</div>
+        <div class="hero-label">
+          Score Ponderado
+          <span class="tip-icon has-tooltip" data-tooltip="Média ponderada dos scores de todos os indicadores ativos.
+
+Positivo → confluência de sinais de compra.
+Negativo → confluência de sinais de venda ou alerta.
+Próximo de zero → mercado sem direção clara.
+
+O Risco (LOW / MEDIUM / HIGH / EXTREME) é derivado deste score em conjunto com o Regime.">?</span>
+        </div>
         <div class="hero-value" id="h-score">—</div>
         <div class="hero-sub" id="h-risk">—</div>
       </div>
+
       <div class="hero-card" style="border-left-color:var(--orange)">
-        <div class="hero-label">Preço BTC</div>
+        <div class="hero-label">
+          Preço BTC
+          <span class="tip-icon has-tooltip" data-tooltip="Preço atual do Bitcoin em dólares americanos, obtido da Binance em tempo real.
+
+Usado como referência para cálculos de Mayer Multiple e posição relativa às médias móveis.
+
+Score bruto = soma direta dos pontos. Score ponderado = ajustado pelo peso de cada indicador no regime atual.">?</span>
+        </div>
         <div class="hero-value" id="h-price" style="color:var(--orange)">—</div>
         <div class="hero-sub" id="h-raw">—</div>
       </div>
