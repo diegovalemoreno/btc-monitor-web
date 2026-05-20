@@ -251,56 +251,69 @@
     .risk-HIGH   { color: var(--sell);       font-weight: 600; }
     .risk-EXTREME { color: var(--sell-strong); font-weight: 600; }
 
-    /* ─── Indicators table ──────────────────────── */
-    table { width: 100%; border-collapse: collapse; }
+    /* ─── Indicator cards grid ──────────────────── */
+    .ind-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
 
-    thead th {
-      text-align: left;
+    .ind-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-left: 2px solid transparent;
+      border-radius: 8px;
+      padding: 11px 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      transition: background 0.12s;
+      cursor: help;
+    }
+    .ind-card:hover { background: var(--surface3); }
+
+    .ind-card.sig-pos  { border-left-color: rgba(0,200,83,0.5); }
+    .ind-card.sig-neg  { border-left-color: rgba(255,23,68,0.5); }
+    .ind-card.sig-zero { border-left-color: rgba(255,214,0,0.35); }
+
+    .ind-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .ind-card-name {
       font-size: 10px;
       font-weight: 600;
-      letter-spacing: 1.2px;
+      letter-spacing: 0.7px;
       text-transform: uppercase;
       color: var(--text-muted);
-      padding: 0 0 10px;
-      border-bottom: 1px solid var(--border);
+      line-height: 1.3;
     }
 
-    tbody tr {
-      border-bottom: 1px solid var(--border-dim);
-      transition: background 0.1s;
+    .ind-card-summary {
+      font-size: 12px;
+      color: var(--text-sec);
+      line-height: 1.4;
     }
-    tbody tr:last-child { border-bottom: none; }
-    tbody tr:hover { background: var(--surface2); }
-
-    tbody td { padding: 10px 0; vertical-align: middle; }
-
-    .ind-name {
-      font-size: 13px;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .ind-score { width: 64px; text-align: center; }
 
     .score-badge {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-width: 38px;
-      padding: 2px 7px;
+      min-width: 34px;
+      padding: 2px 6px;
       border-radius: 20px;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 700;
       font-family: var(--font-mono);
+      flex-shrink: 0;
     }
 
     .score-pos .score-badge  { background: rgba(0,200,83,0.12);  color: var(--buy-strong); }
     .score-neg .score-badge  { background: rgba(255,23,68,0.12);  color: var(--sell-strong); }
     .score-zero .score-badge { background: rgba(255,214,0,0.10);  color: var(--neutral); }
-
-    .ind-summary { font-size: 12px; color: var(--text-sec); padding-left: 20px; }
 
     /* ─── Triggered rules ───────────────────────── */
     .rules-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
@@ -475,9 +488,15 @@
     }
 
     /* ─── Responsive ─────────────────────────────── */
+    @media (max-width: 780px) {
+      .ind-grid { grid-template-columns: repeat(2, 1fr); }
+    }
     @media (max-width: 600px) {
       .hero-grid      { grid-template-columns: 1fr; }
       .playbook-grid  { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 420px) {
+      .ind-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 480px) {
       .container      { padding: 20px 16px 40px; }
@@ -565,18 +584,7 @@ Score bruto = soma direta dos pontos. Score ponderado = ajustado pelo peso de ca
     </div>
 
     <div class="section-label">Indicadores</div>
-    <div class="card">
-      <table>
-        <thead>
-          <tr>
-            <th>Indicador</th>
-            <th style="text-align:center;width:64px">Pts</th>
-            <th style="padding-left:20px">Estado</th>
-          </tr>
-        </thead>
-        <tbody id="indicators-body"></tbody>
-      </table>
-    </div>
+    <div class="ind-grid" id="indicators-body"></div>
 
     <div class="section-label">Regras Disparadas</div>
     <div class="card">

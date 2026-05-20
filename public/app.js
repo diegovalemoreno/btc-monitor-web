@@ -74,16 +74,19 @@ function escapeHtml(str) {
 }
 
 function renderIndicators(indicators) {
-  const tbody = $("indicators-body");
-  tbody.innerHTML = indicators.map((ind) => {
+  const grid = $("indicators-body");
+  grid.innerHTML = indicators.map((ind) => {
     const tip = TOOLTIPS[ind.name] || "";
     const tipAttr = tip ? `data-tooltip="${escapeHtml(tip)}"` : "";
-    return `
-    <tr>
-      <td class="ind-name has-tooltip" ${tipAttr}>${ind.name}${tip ? ' <span class="tip-icon">?</span>' : ''}</td>
-      <td class="ind-score ${scoreClass(ind.score)}"><span class="score-badge">${scoreLabel(ind.score)}</span></td>
-      <td class="ind-summary">${ind.summary}</td>
-    </tr>`;
+    const sc = scoreClass(ind.score);
+    const sigClass = ind.score > 0 ? "sig-pos" : ind.score < 0 ? "sig-neg" : "sig-zero";
+    return `<div class="ind-card ${sigClass}${tip ? " has-tooltip" : ""}" ${tipAttr}>
+      <div class="ind-card-header">
+        <span class="ind-card-name">${ind.name}</span>
+        <span class="${sc}"><span class="score-badge">${scoreLabel(ind.score)}</span></span>
+      </div>
+      <div class="ind-card-summary">${ind.summary}</div>
+    </div>`;
   }).join("");
 }
 
