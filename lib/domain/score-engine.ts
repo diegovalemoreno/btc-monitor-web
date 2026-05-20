@@ -103,6 +103,7 @@ export function calculateTotalScore(indicators: AllIndicators): ScoreResult {
     etfFlow:         indicators.etfFlow,
     piCycle:         indicators.piCycle,
     bollinger:       indicators.bollinger,
+    dxy:             indicators.dxy,
     marketRegime:    indicators.marketRegime,
     compositeSignal: indicators.compositeSignal,
   };

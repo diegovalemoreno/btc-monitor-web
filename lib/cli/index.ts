@@ -22,6 +22,7 @@ import { fetchLiquidations } from "../adapters/liquidations.adapter";
 import { fetchEtfFlow } from "../adapters/etf-flows.adapter";
 import { fetchPiCycle } from "../adapters/pi-cycle.adapter";
 import { fetchBollinger } from "../adapters/bollinger.adapter";
+import { fetchDxy } from "../adapters/dxy.adapter";
 import { buildMvrv } from "../adapters/mvrv.adapter";
 import { buildMayer } from "../adapters/mayer.adapter";
 
@@ -50,6 +51,7 @@ import {
   RealizedPriceResult,
   PiCycleResult,
   BollingerResult,
+  DxyResult,
 } from "../types/indicator";
 import { formatUSD } from "../utils/date";
 
@@ -103,6 +105,7 @@ export async function gatherReport(): Promise<MonitorReport> {
     etfFlow,
     piCycle,
     bollinger,
+    dxy,
   ] = await Promise.all([
     fetchFearGreed(),
     priceForCalc > 0
@@ -126,6 +129,7 @@ export async function gatherReport(): Promise<MonitorReport> {
     priceForCalc > 0
       ? fetchBollinger(priceForCalc)
       : Promise.resolve(priceUnavailable<BollingerResult>({}, "Bollinger %B")),
+    fetchDxy(),
   ]);
 
   // MVRV é derivado: price atual / realized price (sem nova chamada de API)
@@ -171,7 +175,7 @@ export async function gatherReport(): Promise<MonitorReport> {
     etfFlow,
     piCycle,
     bollinger,
-    // placeholders — preenchidos abaixo
+    dxy,
     marketRegime: { status: "unknown", score: 0 },
     compositeSignal: { status: "unknown", score: 0 },
   };
@@ -233,6 +237,7 @@ export async function runMonitor(): Promise<string> {
   push(row("ETF Institucional",     indicators.etfFlow));
   push(row("Pi Cycle Top",          indicators.piCycle));
   push(row("Bollinger %B",          indicators.bollinger));
+  push(row("DXY (Dólar Index)",     indicators.dxy));
   push(row("Regime de Mercado",     indicators.marketRegime));
   push();
   push(row("Sinais Compostos",      indicators.compositeSignal));

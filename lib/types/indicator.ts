@@ -159,6 +159,14 @@ export interface BollingerValue {
 
 export type BollingerResult = IndicatorResult<BollingerValue>;
 
+export interface DxyValue {
+  current: number;
+  change5d: number;
+  score: number;
+}
+
+export type DxyResult = IndicatorResult<DxyValue>;
+
 // ─── Agregado de todos os indicadores ────────────────────────
 
 export interface AllIndicators {
@@ -177,6 +185,7 @@ export interface AllIndicators {
   etfFlow: EtfFlowResult;
   piCycle: PiCycleResult;
   bollinger: BollingerResult;
+  dxy: DxyResult;
   marketRegime: MarketRegimeResult;
   compositeSignal: CompositeSignalResult;
 }

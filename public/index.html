@@ -264,6 +264,41 @@
     .risk-MEDIUM { color: #88aa55; }
     .risk-HIGH   { color: var(--yellow); }
     .risk-EXTREME { color: var(--red); }
+
+    /* ── Tooltip ────────────────────────────────── */
+    .has-tooltip { cursor: help; }
+
+    .tip-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 13px; height: 13px;
+      border-radius: 50%;
+      background: var(--border);
+      color: var(--muted);
+      font-size: 9px;
+      font-style: normal;
+      vertical-align: middle;
+      margin-left: 4px;
+      flex-shrink: 0;
+    }
+
+    .tooltip-box {
+      display: none;
+      position: absolute;
+      z-index: 9999;
+      max-width: 340px;
+      background: #1c1c1c;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 11px;
+      line-height: 1.7;
+      color: #c8c8c8;
+      white-space: pre-wrap;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>

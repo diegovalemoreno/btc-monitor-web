@@ -31,6 +31,7 @@ function indicatorsToScores(ind: AllIndicators): IndicatorScore[] {
     ["ETF Institucional", ind.etfFlow],
     ["Pi Cycle Top",      ind.piCycle],
     ["Bollinger %B",      ind.bollinger],
+    ["DXY (Dólar Index)", ind.dxy],
     ["Regime de Mercado", ind.marketRegime],
     ["Sinais Compostos",  ind.compositeSignal],
   ];

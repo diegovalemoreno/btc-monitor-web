@@ -19,6 +19,7 @@ export type IndicatorKey =
   | "etfFlow"
   | "piCycle"
   | "bollinger"
+  | "dxy"
   | "marketRegime"
   | "compositeSignal";
 
@@ -44,4 +45,5 @@ export const WEIGHTS: Record<IndicatorKey, number> = {
   hashRibbon:       1,
   sellerPressure:   1,
   bollinger:        1,
+  dxy:              1,
 };
