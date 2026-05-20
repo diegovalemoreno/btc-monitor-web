@@ -10,14 +10,24 @@ function LoginForm() {
   const next = searchParams.get('next') ?? '/dashboard'
 
   async function handleGoogleLogin() {
-    const supabase = createClient()
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/api/auth/callback?next=${encodeURIComponent(next)}`,
-      },
-    })
-    if (error) alert(`Erro OAuth: ${error.message}`)
+    try {
+      const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+      const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+      if (!url || !key) {
+        alert(`Env vars ausentes — URL: ${url ?? 'undefined'}, KEY: ${key ? 'ok' : 'undefined'}`)
+        return
+      }
+      const supabase = createClient()
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/api/auth/callback?next=${encodeURIComponent(next)}`,
+        },
+      })
+      if (error) alert(`Erro OAuth: ${error.message}`)
+    } catch (e) {
+      alert(`Exceção: ${e instanceof Error ? e.message : String(e)}`)
+    }
   }
 
   return (
