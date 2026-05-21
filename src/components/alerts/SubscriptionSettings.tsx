@@ -68,7 +68,7 @@ export default function SubscriptionSettings({ initial }: Props) {
         Configuração de alertas
       </h2>
 
-      <div style={{ background: '#111111', border: '1px solid rgba(224,138,58,0.13)', borderRadius: '12px', overflow: 'hidden' }}>
+      <div style={{ background: '#111111', border: '1px solid rgba(224,138,58,0.13)', borderRadius: '12px' }}>
 
         {/* Enabled toggle */}
         <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(224,138,58,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
